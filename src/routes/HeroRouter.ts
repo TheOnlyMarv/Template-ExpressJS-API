@@ -1,6 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 const Heroes = require('../data.json');
 
+
+import "reflect-metadata";
+import {createConnection} from "typeorm";
+import {User} from '../models/User';
+
 export class HeroRouter {
     router: Router
 
@@ -16,7 +21,25 @@ export class HeroRouter {
      * GET all Heroes.
      */
     public getAll(req: Request, res: Response, next: NextFunction) {
-        res.send(Heroes);
+        //res.send(Heroes);
+        createConnection({
+            type: "mysql",
+            host: "localhost",
+            port: 3306,
+            username: "root",
+            password: "",
+            database: "todo",
+            entities: [
+                User
+            ],
+            autoSchemaSync: true,
+        }).then(async connection => {
+            //console.log(connection);
+            let users = await connection.manager.find(User);
+            res.status(200).send(users);
+            // Here you can start to work with your entities
+            connection.close();
+        }).catch(error => {console.log(error); res.send(error)});
     }
 
     /**
