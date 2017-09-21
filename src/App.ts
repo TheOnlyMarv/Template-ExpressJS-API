@@ -4,6 +4,7 @@ import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 
 import HeroRouter from './routes/HeroRouter';
+import UserRouter from './routes/UserRouter';
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -39,6 +40,7 @@ class App {
     });
     this.express.use('/', router);
     this.express.use('/api/v1/heroes', HeroRouter);
+    this.express.use('/todo/v1/users', UserRouter);
   }
 
 }
