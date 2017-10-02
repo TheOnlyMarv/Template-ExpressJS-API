@@ -3,7 +3,8 @@ import { Router, Request, Response, NextFunction } from 'express';
 
 import "reflect-metadata";
 import { createConnection } from 'typeorm';
-import { User } from '../models/User';
+import { User } from '../database/models/User';
+import { DbContext } from '../database/DbContext';
 
 export class UserRouter {
     router: Router
@@ -20,48 +21,37 @@ export class UserRouter {
      * GET all Users.
      */
     public getAll(req: Request, res: Response, next: NextFunction) {
-        //res.send(Heroes);
-        createConnection({
-            type: "mysql",
-            host: "localhost",
-            port: 3306,
-            username: "root",
-            password: "",
-            database: "todo",
-            entities: [
-                User
-            ],
-            autoSchemaSync: true,
-        }).then(async connection => {
-            // Here you can start to work with your entities
-            let users = await connection.manager.find(User);
-            res.send(users);
-            connection.close();
-        }).catch(error => { console.log(error); res.send(error) });
+
+        let dbUsers = DbContext.getInstance().Users();
+
+        dbUsers.then(async users => {
+            res.send(await users.find());
+            DbContext.getInstance().CloseConnection();
+        }).catch(error => {
+            res.status(500).send({ error: 'true', reason: 'DB Error: View log!' })
+            DbContext.getInstance().CloseConnection();
+        });
+
     }
 
     /**
      * GET one User by id
      */
     public getOne(req: Request, res: Response, next: NextFunction) {
+
         let query = parseInt(req.params.id);
-        createConnection({
-            type: "mysql",
-            host: "localhost",
-            port: 3306,
-            username: "root",
-            password: "",
-            database: "todo",
-            entities: [
-                User
-            ],
-            autoSchemaSync: true,
-        }).then(async connection => {
-            // Here you can start to work with your entities
-            let users = await connection.manager.find(User);
-            res.send(users.find(x => x.id == query));
-            connection.close();
-        }).catch(error => { console.log(error); res.send(error) });
+
+        let dbUsers = DbContext.getInstance().Users();
+        dbUsers.then(async users => {
+            let user = await users.findOneById(query);
+            if (user) {
+                res.send(user);
+            } else {
+                res.status(404).send();
+            }
+        }).catch(error => {
+            res.status(500).send({ error: 'true', reason: 'DB Error: View log!' })
+        });
     }
 
     /**
