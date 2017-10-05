@@ -1,44 +1,31 @@
-import * as http from 'http';
-import * as debug from 'debug';
+import "reflect-metadata";
+import {createConnection} from "typeorm";
+import {Request, Response} from "express";
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import {AppRoutes} from "./routes";
 
-import App from './App';
+// create connection with database
+// note that its not active database connection
+// TypeORM creates you connection pull to uses connections from pull on your requests
+createConnection().then(async connection => {
 
-debug('ts-express:server');
+    // create express app
+    const app = express();
+    app.use(bodyParser.json());
 
-const port = normalizePort(process.env.PORT || 3000);
-App.set('port', port);
+    // register all application routes
+    AppRoutes.forEach(route => {
+        app[route.method](route.path, (request: Request, response: Response, next: Function) => {
+            route.action(request, response)
+                .then(() => next)
+                .catch(err => next(err));
+        });
+    });
 
-const server = http.createServer(App);
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+    // run app
+    app.listen(3000);
 
-function normalizePort(val: number|string): number|string|boolean {
-  let port: number = (typeof val === 'string') ? parseInt(val, 10) : val;
-  if (isNaN(port)) return val;
-  else if (port >= 0) return port;
-  else return false;
-}
+    console.log("Express application is up and running on port 3000");
 
-function onError(error: NodeJS.ErrnoException): void {
-  if (error.syscall !== 'listen') throw error;
-  let bind = (typeof port === 'string') ? 'Pipe ' + port : 'Port ' + port;
-  switch(error.code) {
-    case 'EACCES':
-      console.error(`${bind} requires elevated privileges`);
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(`${bind} is already in use`);
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-function onListening(): void {
-  let addr = server.address();
-  let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-  debug(`Listening on ${bind}`);
-}
+}).catch(error => console.log("TypeORM connection error: ", error));
