@@ -5,7 +5,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "author": {
-    "name": "Umed Khudoiberdiev", 
+    "name": "Umed Khudoiberdiev",
     "email": "pleerock.me@gmail.com"
   },
   "repository": {
@@ -30,10 +30,12 @@
     "@types/body-parser": "^1.16.5",
     "@types/express": "^4.0.37",
     "@types/node": "^8.0.31",
+    "basic-auth": "^2.0.0",
     "body-parser": "^1.18.2",
     "express": "^4.15.5",
     "mysql": "^2.14.1",
     "reflect-metadata": "^0.1.10",
+    "ts-md5": "^1.2.2",
     "typeorm": "0.1.0-alpha.49"
   },
   "scripts": {

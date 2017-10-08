@@ -6,6 +6,8 @@
   "password": "",
   "database": "test",
   "synchronize": true,
+  "logging": "all",
+
   "entities": [
     "dist/entity/*.js"
   ],
@@ -16,8 +18,8 @@
     "dist/migration/*.js"
   ],
   "cli": {
-    "entitiesDir": "dist/entity",
-    "migrationsDir": "dist/migration",
-    "subscribersDir": "dist/subscriber"
+    "entitiesDir": "src/entity",
+    "migrationsDir": "src/migration",
+    "subscribersDir": "src/subscriber"
   }
 }
