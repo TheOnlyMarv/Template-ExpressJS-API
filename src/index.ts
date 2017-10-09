@@ -1,9 +1,9 @@
 import "reflect-metadata";
-import {createConnection} from "typeorm";
-import {Request, Response} from "express";
+import { createConnection } from "typeorm";
+import { Request, Response } from "express";
 import * as express from "express";
 import * as bodyParser from "body-parser";
-import {AppRoutes} from "./routes";
+import { AppRoutes } from "./routes";
 
 // create connection with database
 // note that its not active database connection

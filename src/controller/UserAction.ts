@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { getManager } from "typeorm";
 import { User } from "../entity/User";
-import { hashingPassword } from "../Utilities";
+import { hashingPassword, deleteUnsafeInformation, generateToken } from "../Utilities";
 
 /**
  * Saves given user.
@@ -69,6 +69,8 @@ export async function userGetByIdAction(request: Request, response: Response) {
     // delete token vor all users
     deleteUnsafeInformation([user]);
 
+    await user.lists;
+
     // return loaded user
     response.send(user);
 }
@@ -98,11 +100,12 @@ export async function userLoginAction(request: Request, response: Response) {
         return;
     }
 
-    response.send(user);
-}
-
-function deleteUnsafeInformation(users: User[]) {
-    if (users) {
-        users.forEach(user => { user.token = ""; user.password = "" });
+    if (!user.token) {
+        user.token = generateToken(user.username);
+        await userRepository.updateById(user.id, { token: user.token });
     }
+
+    await user.lists;
+
+    response.send(user);
 }

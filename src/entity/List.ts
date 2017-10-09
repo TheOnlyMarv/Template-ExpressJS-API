@@ -3,7 +3,11 @@ import { Md5 } from "ts-md5/dist/md5";
 import { User } from "./User";
 import { ListEntry } from "./ListEntry";
 
-@Entity()
+@Entity({
+    orderBy: {
+        createdAt: "DESC"
+    }
+})
 export class List {
     @PrimaryGeneratedColumn()
     id: number;
@@ -17,13 +21,16 @@ export class List {
     @Column({ type: "datetime" })
     createdAt: Date;
 
-    @ManyToMany(type => User, user=>user.lists)
+    @ManyToMany(type => User, user => user.lists,
+        { cascadeInsert: true, cascadeUpdate: true })
     @JoinTable()
-    users: User[];
+    users: Promise<User[]>;
 
-    @OneToMany(type => ListEntry, listEntry => listEntry.list)
+    @OneToMany(type => ListEntry, listEntry => listEntry.list,
+        { cascadeInsert: true, cascadeUpdate: true },
+    )
     @JoinTable()
-    entries: ListEntry[]
+    entries: Promise<ListEntry[]>;
 
     @BeforeInsert()
     createNewList() {

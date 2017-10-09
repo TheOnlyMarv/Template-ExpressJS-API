@@ -1,7 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, BeforeInsert } from "typeorm";
 import { List } from "./List";
 
-@Entity()
+@Entity({
+    orderBy: {
+        rank: "ASC"
+    }
+})
 export class ListEntry {
 
     @PrimaryGeneratedColumn()
@@ -13,11 +17,13 @@ export class ListEntry {
     @Column()
     rank: number;
 
-    @Column({type: "datetime"})
+    @Column({ type: "datetime" })
     createdAt: Date;
 
-    @ManyToOne(type=>List, list => list.entries)
-    list: List;
+    @ManyToOne(type => List, list => list.entries,
+        { cascadeInsert: true, cascadeUpdate: true }
+    )
+    list: Promise<List>;
 
     @BeforeInsert()
     createNewList() {

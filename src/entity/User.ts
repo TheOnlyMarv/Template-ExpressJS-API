@@ -20,8 +20,10 @@ export class User {
     @Column()
     token: string;
 
-    @ManyToMany(type=>List, list => list.users)
-    lists: List[];
+    @ManyToMany(type => List, list => list.users,
+        { cascadeInsert: true, cascadeUpdate: true }
+    )
+    lists: Promise<List[]>;
 
     @BeforeInsert()
     createNewUser() {
@@ -32,7 +34,7 @@ export class User {
 
     @AfterInsert()
     @AfterLoad()
-    removePassword(){
+    removePassword() {
         this.password = "";
     }
 }
