@@ -3,3 +3,4 @@ src/**/*.js
 src/**/*.js.map
 *.log
 dist
+ormconfig.json
