@@ -17,6 +17,9 @@ export class ListEntry {
     @Column()
     rank: number;
 
+    @Column()
+    checked: boolean;
+
     @Column({ type: "datetime" })
     createdAt: Date;
 
